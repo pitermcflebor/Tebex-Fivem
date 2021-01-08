@@ -6,6 +6,13 @@
 - Put the resource inside your `resources` folder
 - Add `ensure tebex` into your `server.cfg` file
 
+### Tebex setup
+- Create a new global command or add a new command to package
+- Set the command to:
+    `tebex_purchase {"transaction":"{transaction}","server":"{server}","price":"{price}","currency":"{currency}","time":"{time}","date":"{date}","email":"{email}","ip":"{ip}","packageId":"{packageId}","packagePrice":"{packagePrice}","packageExpiry":"{packageExpiry}","packageName":"{packageName}","purchaserName":"{purchaserName}","purchaserUuid":"{purchaserUuid}","purchaseQuantity":"{purchaseQuantity}"}`
+- Configure the command the server you want to be executed
+- Set the command to `even if the player is offline`
+
 ### Usage
 - Import tebex to your resource with `server_script '@tebex/lib/tebex.lua'`
 - Check the [example.lua](tebex/example.lua) file
