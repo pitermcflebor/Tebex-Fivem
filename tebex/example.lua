@@ -1,64 +1,21 @@
 
--- event for package bought
--- by name
-Tebex:OnPackageNameBought('Some Package Name', function(purchase)
-	print(('[Tebex:Payments]: User %s bought the package %s (%s)\nOther: %s'):format(
-		purchase.Purchaser.Name,
-		purchase.Package.Name,
-		purchase.Transaction.FullPrice,
-		json.encode(purchase.Params)
-	))
+-- handle new payments events ONLY SERVER-SIDE
+AddEventHandler('tebex:newPayment', function(packageName, packageData)
+    print( ("[PAYMENTS]: New payment for %s"):format(packageName) )
 end)
--- by id
-Tebex:OnPackageIdBought('123456789', function(purchase)
-	print(('[Tebex:Payments]: User %s bought the package %s (%s)'):format(
-        purchase.Purchaser.Name,
-        purchase.Package.Name,
-		purchase.Transaction.FullPrice
-    ))
+
+-- execute any framework function ONLY SERVER-SIDE
+ESX = nil
+TriggerEvent('esx:getSharedObject', function(o) ESX = o end)
+
+AddEventHandler('tebex:newPayment', function(packageName, packageData)
+    if packageName == "Money" then
+        local playerId = packageData.variables["server_id"] -- you should have setup a variable on your package first!
+        local xPlayer = ESX.GetPlayerFromId(playerId)
+        if xPlayer then
+            xPlayer.addMoney(100)
+            -- notify player?
+            TriggerClientEvent('chat:addMessage', playerId, { args={"TEBEX", "You bought "..packageName} })
+        end
+    end
 end)
--- purchase data structure:
---[[
-Transaction {
-	Id
-	Server
-	Price
-	Currency
-	FullPrice
-	Date
-	Quantity
-	Amount
-}
-Package {
-	Id
-	Price
-	Expiry
-	Name
-}
-Purchaser {
-	Name
-	UUID
-}
-]]
-
-
--- getting packages info
-local packages = Tebex:GetPackages()							-- get a list of all packages
-local package = packages:GetPackageByName('Some Package Name')	-- find a package with the name
-local package = packages:GetPackageById(123456789)				-- find a package with the id
--- package data example: https://docs.tebex.io/plugin/endpoints/packages#retrieve-a-package
-
-
--- getting Tebex account info
-local account = Tebex:GetAccountInfo()
--- account data example: https://docs.tebex.io/plugin/endpoints/information#get-server-information
-
-
--- check if player bought the package
-if Tebex:DoesPlayerBoughtPackage(source, 'Some Package Name') then
-	-- code
-end
--- check if player bought the package by id
-if Tebex:DoesPlayerBoughtPackage(source, 123456789) then
-	-- code
-end
